@@ -27,7 +27,7 @@ export async function POST(request) {
                         sets: exercise.sets,
                         reps: exercise.reps,
                         duration: exercise.duration,
-                        //order: index + 1,
+                        order: exercise.order,
                     })),
                 },
             },
