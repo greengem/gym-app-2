@@ -17,12 +17,12 @@ model User {
 }
 
 model Session {
-  id            String   @id
+  id             String   @id
   active_expires BigInt
   idle_expires   BigInt
   user_id        String
-  username       String?
-  User           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  username       String
+  User           User     @relation(fields: [user_id], references:    [id], onDelete: Cascade)
   timers         Timer[]
 }
 
