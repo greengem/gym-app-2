@@ -7,22 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id
-  providerAccountId String
-  userId            String
-  access_token      String?
-  expires_at        Int?
-  id_token          String?
-  provider          String
-  refresh_token     String?
-  scope             String?
-  session_state     String?
-  token_type        String?
-  type              String
-  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+model User {
+  id           String       @id
+  username     String
+  Session      Session[]
+  Key          Key[]
+  workoutLogs  WorkoutLog[]
+  workoutPlans WorkoutPlan[]
+}
 
-  @@unique([provider, providerAccountId])
+model Session {
+  id            String   @id
+  active_expires BigInt
+  idle_expires   BigInt
+  user_id        String
+  username       String?
+  User           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  timers         Timer[]
+}
+
+
+model Key {
+  id              String   @id
+  user_id         String
+  hashed_password  String?
+  User            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Exercise {
@@ -46,15 +55,6 @@ model Exercise {
   WorkoutPlanExercise WorkoutPlanExercise[]
 }
 
-model Session {
-  id           String   @id
-  expires      DateTime
-  sessionToken String   @unique
-  userId       String
-  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Timer        Timer?
-}
-
 model SetLog {
   id                   String             @id
   workoutLogExerciseId String
@@ -72,26 +72,6 @@ model Timer {
   pausedDuration Int         @default(0)
   status         TimerStatus
   Session        Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String        @id
-  email         String?       @unique
-  name          String?
-  emailVerified DateTime?
-  image         String?
-  Account       Account[]
-  Session       Session[]
-  WorkoutLog    WorkoutLog[]
-  WorkoutPlan   WorkoutPlan[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
 
 model WorkoutLog {

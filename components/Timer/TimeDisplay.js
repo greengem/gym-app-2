@@ -7,7 +7,7 @@ const TimeDisplay = () => {
 
   return (
     <div>
-      <h1>Stopwatch Time: {time} seconds</h1>
+      <h1>Time: {time} seconds</h1>
     </div>
   );
 };

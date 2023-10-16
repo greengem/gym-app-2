@@ -10,7 +10,9 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@lucia-auth/adapter-prisma": "^3.0.2",
     "@prisma/client": "^5.4.2",
+    "lucia": "^2.7.1",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18"
