@@ -98,11 +98,11 @@ model WorkoutLogExercise {
 }
 
 model WorkoutPlan {
-  id                  String                @id
+  id                  String                @id @default(uuid())
   name                String
   userId              String
   createdAt           DateTime              @default(now())
-  updatedAt           DateTime
+  updatedAt           DateTime              @default(now())
   notes               String?
   WorkoutLog          WorkoutLog[]
   User                User                  @relation(fields: [userId], references: [id])
@@ -115,7 +115,7 @@ model WorkoutPlanExercise {
   sets          Int
   reps          Int
   duration      Int?
-  order         Int
+  order         Int?
   Exercise      Exercise    @relation(fields: [exerciseId], references: [id])
   WorkoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
 

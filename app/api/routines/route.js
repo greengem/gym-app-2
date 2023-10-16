@@ -19,6 +19,7 @@ export async function POST(request) {
         const newWorkoutPlan = await prisma.workoutPlan.create({
             data: {
                 name: routineName,
+                userId: 'mv8avz0o1jn8d3r',  // Hardcoded userId
                 notes: notes,
                 WorkoutPlanExercise: {
                     create: exercises.map((exercise) => ({
@@ -26,6 +27,7 @@ export async function POST(request) {
                         sets: exercise.sets,
                         reps: exercise.reps,
                         duration: exercise.duration,
+                        //order: index + 1,
                     })),
                 },
             },
@@ -38,10 +40,11 @@ export async function POST(request) {
         });
 
     } catch (error) {
-        // Handle any errors that may occur
-        return new Response(JSON.stringify({ error: "An error occurred saving routine." }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
-    }
+            console.error("Error while saving the routine:", error);
+            return new Response(JSON.stringify({ error: "An error occurred saving routine." }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+        
 }
