@@ -1,23 +1,22 @@
+import prisma from '@/db/prisma';
 import PageHeading from '@/components/PageHeading/PageHeading'
 
-async function getexercises(){
-  const res = await fetch(`${process.env.SERVER_PATH}/api/exercises`, { cache: 'no-store' })
-  const exercises = await res.json()
-
-  return exercises
+async function getExercises(){
+  const exercises = await prisma.exercise.findMany();
+  return exercises;
 }
 
 export default async function ExercisesPage() {
-  const exercises = await getexercises()
+  const exercises = await getExercises()
 
   return (
     <>
-    <PageHeading pageTitle="Exercises" />
-    <ul>
-      {exercises.map((exercise) => (
-        <li key={exercise.id}>{exercise.name}</li>
-      ))}
-    </ul>
+      <PageHeading pageTitle="Exercises" />
+      <ul>
+        {exercises.map((exercise) => (
+          <li key={exercise.id}>{exercise.name}</li>
+        ))}
+      </ul>
     </>
   )
 }
