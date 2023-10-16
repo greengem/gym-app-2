@@ -1,7 +1,7 @@
 import PageHeading from '@/components/PageHeading/PageHeading'
 
 async function getexercises(){
-  const res = await fetch(`http://localhost:3000/api/exercises`, { cache: 'no-store' })
+  const res = await fetch(`${process.env.SERVER_PATH}/api/exercises`, { cache: 'no-store' })
   const exercises = await res.json()
 
   return exercises

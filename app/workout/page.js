@@ -1,7 +1,7 @@
 import PageHeading from '@/components/PageHeading/PageHeading'
 
 async function getRoutines(){
-  const res = await fetch(`http://localhost:3000/api/routines`, { cache: 'no-store' })
+  const res = await fetch(`${process.env.SERVER_PATH}/api/routines`, { cache: 'no-store' })
   const routines = await res.json()
 
   return routines
