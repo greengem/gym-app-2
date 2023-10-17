@@ -28,12 +28,14 @@ export default function WorkoutManager({ workout }) {
             if (updatedExercises[index].sets > 1) {
                 updatedExercises[index].sets--;
                 updatedExercises[index].completedSets.pop();
+                toast.success(`Set removed from ${exerciseName}`);
                 return updatedExercises;
             }
+            toast.error(`Must have at least one set.`);
             return prevExercises;
         });
-        toast.success(`Set removed from ${exerciseName}`);
     };
+    
 
     const handleCompletion = (exerciseIndex, setIndex, exerciseName) => {
         setExercises(prevExercises => {
