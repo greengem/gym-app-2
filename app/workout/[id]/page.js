@@ -5,20 +5,20 @@ import WorkoutManager from './WorkoutManager';
 async function fetchRoutine(id) {
     return await prisma.workoutPlan.findUnique({
         where: {
-          id: id,
+          	id: id,
         },
         select: {
             id: true,
             name: true,
             notes: true,
             WorkoutPlanExercise: {
-              select: {
-                Exercise: {
-                  select: {
-                    id: true,
-                    name: true,
-                  }
-                },
+								select: {
+										Exercise: {
+												select: {
+														id: true,
+														name: true,
+												}
+                		},
                 sets: true,
                 reps: true,
                 duration: true,

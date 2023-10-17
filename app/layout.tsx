@@ -18,7 +18,7 @@ export default function RootLayout({
               <div className="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white">
                 <Sidebar />
               </div>
-              <div className="ml-0 lg:ml-64 flex-1 p-5">
+              <div className="ml-64 flex-1 p-5">
                 {children}
               </div>
             </div>
