@@ -1,13 +1,14 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
-const StopwatchContext = createContext();
+const WorkoutContext = createContext();
 
-export const useStopwatch = () => useContext(StopwatchContext);
+export const useStopwatch = () => useContext(WorkoutContext);
 
-export const StopwatchProvider = ({ children }) => {
+export const WorkoutProvider = ({ children }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
+  const [workoutName, setWorkoutName] = useState("");
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -38,8 +39,16 @@ export const StopwatchProvider = ({ children }) => {
   };
 
   return (
-    <StopwatchContext.Provider value={{ isRunning, time, start, pause, stop }}>
+    <WorkoutContext.Provider value={{ 
+        isRunning, 
+        time, 
+        start, 
+        pause, 
+        stop,
+        workoutName,
+        setWorkoutName
+    }}>
       {children}
-    </StopwatchContext.Provider>
+    </WorkoutContext.Provider>
   );
 };

@@ -1,11 +1,11 @@
 "use client";
 
-import { StopwatchProvider } from '@/contexts/StopwatchContext'
+import { WorkoutProvider } from '@/contexts/WorkoutContext'
 
 export function Providers({children}: { children: React.ReactNode }) {
   return (
-    <StopwatchProvider>
+    <WorkoutProvider>
       {children}
-    </StopwatchProvider>
+    </WorkoutProvider>
   )
 }
