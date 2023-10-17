@@ -1,7 +1,15 @@
+import { auth } from "@/auth/lucia";
+import * as context from "next/headers";
+import { redirect } from "next/navigation";
+
 import PageHeading from '@/components/PageHeading/PageHeading'
 import RoutineBuilder from './RoutineBuilder'
 
-export default function NewRoutinePage() {
+export default async function NewRoutinePage() {
+  const authRequest = auth.handleRequest("GET", context);
+  const session = await authRequest.validate();
+  if (!session) redirect("/login");
+
   return (
     <>
       <PageHeading pageTitle="Create New Routine" />

@@ -1,9 +1,16 @@
+import { auth } from "@/auth/lucia";
+import * as context from "next/headers";
 import prisma from '@/db/prisma';
+import { redirect } from "next/navigation";
+
 import PageHeading from '@/components/PageHeading/PageHeading'
 import Link from 'next/link';
 
-async function getRoutines(){
+async function getRoutines(userId){
   const routines = await prisma.workoutPlan.findMany({
+    where: {
+      userId: userId,
+    },
     include: {
         WorkoutPlanExercise: {
             include: {
@@ -17,7 +24,10 @@ async function getRoutines(){
 }
 
 export default async function RoutinesPage() {
-  const routines = await getRoutines()
+  const authRequest = auth.handleRequest("GET", context);
+  const session = await authRequest.validate();
+  if (!session) redirect("/login");
+  const routines = await getRoutines(session.user.userId)
 
   return (
     <>

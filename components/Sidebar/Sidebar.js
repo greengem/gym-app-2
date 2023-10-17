@@ -1,14 +1,11 @@
 import SidebarNav from './SidebarNav'
-import TimeDisplay from '@/components/Timer/TimeDisplay'
-import Controls from '@/components/Timer/Controls'
+//import WorkoutDisplay from '@/components/Timer/WorkoutDisplay'
 
 export default function Sidebar() {
     return (
         <>
             <div className='p-5'>
                 <SidebarNav />
-                <TimeDisplay />
-                <Controls />
             </div>
         </>
     )
