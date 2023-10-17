@@ -28,7 +28,7 @@ export default async function RoutinesPage() {
             <p className='font-bold'>{routine.name}</p>
             {routine.notes && <p>{routine.notes}</p>}
             {routine.WorkoutPlanExercise.map((exerciseDetail) => (
-              <ul key={exerciseDetail.Exercise.id}>
+              <ul key={exerciseDetail.Exercise.id} className='flex'>
                 {exerciseDetail.Exercise.name && <li>{exerciseDetail.Exercise.name}</li>}
                 {exerciseDetail.sets && <li>{exerciseDetail.sets} Sets</li>}
                 {exerciseDetail.reps && <li>{exerciseDetail.reps} Reps</li>}
