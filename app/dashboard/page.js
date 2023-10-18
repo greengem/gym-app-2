@@ -6,18 +6,21 @@ import { redirect } from "next/navigation";
 import PageHeading from '@/components/PageHeading/PageHeading'
 import Form from "@/components/form";
 
-async function getWorkouts() {
+async function getWorkouts(userId) {
 	const workouts = await prisma.workoutLog.findMany({
-	  include: {
-		WorkoutLogExercise: {
-		  include: {
-			Exercise: true,
-			SetLog: true,
-		  }
-		},
-		User: true,
-		WorkoutPlan: true,
-	  }
+		where: {
+			userId: userId,
+		  },
+		include: {
+			WorkoutLogExercise: {
+			include: {
+				Exercise: true,
+				SetLog: true,
+			}
+			},
+			User: true,
+			WorkoutPlan: true,
+		}
 	});
 	return workouts;
   }
@@ -26,9 +29,9 @@ async function getWorkouts() {
 export default async function DashboardPage() {
 	const authRequest = auth.handleRequest("GET", context);
 	const session = await authRequest.validate();
-	const workouts = await getWorkouts()
-
 	if (!session) redirect("/login");
+	const workouts = await getWorkouts(session.user.userId)
+	
 	return (
 		<>
 			<PageHeading pageTitle="Dashboard" />
@@ -38,30 +41,30 @@ export default async function DashboardPage() {
 				<input type="submit" value="Sign out" />
 			</Form>
 			<ul>
-  {workouts.map((workout) => (
-    <li key={workout.id}>
-      <strong>Workout Name:</strong> {workout.name}
-      <strong>, Date:</strong> {new Date(workout.date).toLocaleDateString()}
+				{workouts.map((workout) => (
+					<li key={workout.id}>
+					<strong>Workout Name:</strong> {workout.name}
+					<strong>, Date:</strong> {new Date(workout.date).toLocaleDateString()}
       
-      <ul>
-        {workout.WorkoutLogExercise.map(wle => (
-          <li key={wle.id}>
-            <strong>Exercise:</strong> {wle.Exercise.name}
-            
-            <ul>
-              {wle.SetLog.map(set => (
-                <li key={set.id}>
-                  <strong>Weight:</strong> {set.weight} 
-                  <strong>, Reps:</strong> {set.reps}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-    </li>
-  ))}
-</ul>
+						<ul>
+							{workout.WorkoutLogExercise.map(wle => (
+							<li key={wle.id}>
+								<strong>Exercise:</strong> {wle.Exercise.name}
+								
+								<ul>
+								{wle.SetLog.map(set => (
+									<li key={set.id}>
+									<strong>Weight:</strong> {set.weight} 
+									<strong>, Reps:</strong> {set.reps}
+									</li>
+								))}
+								</ul>
+							</li>
+							))}
+						</ul>
+						</li>
+					))}
+					</ul>
 
 		</>
 	);
