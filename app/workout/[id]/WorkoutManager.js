@@ -1,7 +1,9 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import Button from '@/components/Button';
+import ProgressBar from './ProgressBar';
 
 export default function WorkoutManager({ workout }) {
     const router = useRouter();
@@ -36,8 +38,44 @@ export default function WorkoutManager({ workout }) {
         });
     };
     
+    const [workoutStartTime, setWorkoutStartTime] = useState(null);
+    const [workoutDuration, setWorkoutDuration] = useState(0);
+    const durationInterval = useRef(null);
+
+    const startWorkout = () => {
+        if (!workoutStartTime) {
+            setWorkoutStartTime(Date.now());
+            toast.success('Workout Session Started!');
+        }
+    };
+
+    useEffect(() => {
+        if (workoutStartTime) {
+            durationInterval.current = setInterval(() => {
+                setWorkoutDuration(prevDuration => prevDuration + 1);
+            }, 1000);
+        }
+    
+        return () => {
+            if (durationInterval.current) {
+                clearInterval(durationInterval.current);
+            }
+        };
+    }, [workoutStartTime]);
+    
+    
+    const formatDuration = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds - hours * 3600) / 60);
+        const remainingSeconds = seconds - hours * 3600 - minutes * 60;
+        
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    };    
 
     const handleCompletion = (exerciseIndex, setIndex, exerciseName) => {
+        if (!workoutStartTime) {
+            startWorkout();
+        }
         setExercises(prevExercises => {
             const updatedExercises = [...prevExercises];
             const currentState = updatedExercises[exerciseIndex].completedSets[setIndex];
@@ -52,6 +90,10 @@ export default function WorkoutManager({ workout }) {
     const workoutName = workout.name;
     const weightRefs = useRef([]);
     const repsRefs = useRef([]);
+    const totalSets = exercises.reduce((acc, curr) => acc + curr.sets, 0);
+    const completedSets = exercises.reduce((acc, curr) => acc + curr.completedSets.filter(set => set).length, 0);
+    const progressPercentage = Math.round((completedSets / totalSets) * 100);
+
 
     // Save Workout
     const completeWorkout = async () => {
@@ -81,6 +123,7 @@ export default function WorkoutManager({ workout }) {
                 body: JSON.stringify({
                     name: workoutName,
                     date: new Date().toISOString(),
+                    duration: workoutDuration,
                     workoutPlanId,
                     exercises: workoutExercises
                 })
@@ -91,6 +134,7 @@ export default function WorkoutManager({ workout }) {
             if (response.ok) {
                 toast.success('Workout saved successfully!');
                 router.push("/dashboard");
+                router.refresh();
             } else {
                 toast.error('Failed to save workout. ' + responseData.message);
             }
@@ -101,7 +145,9 @@ export default function WorkoutManager({ workout }) {
 
     return (
         <>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Start Workout</button>
+            <Button onClick={startWorkout} disabled={!!workoutStartTime}>Start Workout</Button>
+            <div>Duration: {formatDuration(workoutDuration)}</div>
+            <ProgressBar percentage={progressPercentage} />
             {workout.notes && <p>{workout.notes}</p>}
             {workout.WorkoutPlanExercise.map((exerciseDetail, index) => (
                 <div key={exerciseDetail.Exercise.id} className='my-10'>
@@ -139,30 +185,19 @@ export default function WorkoutManager({ workout }) {
                                     />
                                     </td>
                                     <td className='border px-4 py-2'>
-                                        <button 
-                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                                            onClick={() => handleCompletion(index, setIndex, exerciseDetail.Exercise.name)}
-                                        >
-                                        {exercises[index].completedSets[setIndex] ? "Completed" : "Mark as Completed"}
-                                    </button>
+                                        <Button onClick={() => handleCompletion(index, setIndex, exerciseDetail.Exercise.name)}>
+                                            {exercises[index].completedSets[setIndex] ? "Completed" : "Mark as Completed"}
+                                        </Button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-
-
-                    <button className="mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                            onClick={() => addSet(index, exerciseDetail.Exercise.name)}>Add Set</button>
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                            onClick={() => removeSet(index, exerciseDetail.Exercise.name)}>Remove Set</button>
+                    <Button className="mr-2" onClick={() => addSet(index, exerciseDetail.Exercise.name)}>Add Set</Button>
+                    <Button onClick={() => removeSet(index, exerciseDetail.Exercise.name)}>Remove Set</Button>
                 </div>
             ))}
-            <button 
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={completeWorkout}
-            >Save workout
-            </button>
+            <Button onClick={completeWorkout}>Save workout</Button>
         </>
     );
 }

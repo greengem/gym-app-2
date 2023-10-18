@@ -3,7 +3,8 @@ import * as context from "next/headers";
 import prisma from '@/db/prisma';
 import { redirect } from "next/navigation";
 
-import PageHeading from '@/components/PageHeading/PageHeading'
+import PageHeading from '@/components/PageHeading/PageHeading';
+import DeleteButton from './DeleteButton';
 import Link from 'next/link';
 
 async function getRoutines(userId){
@@ -32,7 +33,7 @@ export default async function RoutinesPage() {
   return (
     <>
       <PageHeading pageTitle="Routines" />
-      <Link href="/routines/new">New Routine</Link>
+      <Link className="text-red-500" href="/routines/new">New Routine</Link>
         {routines.map((routine) => (
           <div key={routine.id}>
             <p className='font-bold'>{routine.name}</p>
@@ -45,6 +46,8 @@ export default async function RoutinesPage() {
                 {exerciseDetail.duration && <li>{exerciseDetail.duration} Duration</li>}
               </ul>
             ))}
+            <Link href={`/routines/${routine.id}`}>Edit</Link>
+            <DeleteButton id={routine.id} />
           </div>
         ))}
     </>

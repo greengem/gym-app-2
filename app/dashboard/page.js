@@ -4,6 +4,7 @@ import prisma from '@/db/prisma';
 import { redirect } from "next/navigation";
 
 import PageHeading from '@/components/PageHeading/PageHeading'
+import DeleteButton from "./DeleteButton";
 import Form from "@/components/form";
 
 async function getWorkouts(userId) {
@@ -34,38 +35,40 @@ export default async function DashboardPage() {
 	
 	return (
 		<>
-			<PageHeading pageTitle="Dashboard" />
-			<p>User id: {session.user.userId}</p>
-			<p>Username: {session.user.username}</p>
-			<Form action="/api/logout">
-				<input type="submit" value="Sign out" />
-			</Form>
-			<ul>
-				{workouts.map((workout) => (
-					<li key={workout.id}>
-					<strong>Workout Name:</strong> {workout.name}
-					<strong>, Date:</strong> {new Date(workout.date).toLocaleDateString()}
-      
-						<ul>
-							{workout.WorkoutLogExercise.map(wle => (
-							<li key={wle.id}>
-								<strong>Exercise:</strong> {wle.Exercise.name}
-								
-								<ul>
-								{wle.SetLog.map(set => (
-									<li key={set.id}>
-									<strong>Weight:</strong> {set.weight} 
-									<strong>, Reps:</strong> {set.reps}
-									</li>
-								))}
-								</ul>
-							</li>
-							))}
-						</ul>
-						</li>
-					))}
-					</ul>
-
+		  <PageHeading pageTitle="Dashboard" />
+		  <p>User id: {session.user.userId}</p>
+		  <p>Username: {session.user.username}</p>
+		  <Form action="/api/logout">
+			<input type="submit" value="Sign out" />
+		  </Form>
+		  <ul>
+			{workouts.map((workout) => (
+			  <li key={workout.id}>
+				<strong>Workout Name:</strong> {workout.name}
+				<strong>Date and Time:</strong> {new Date(workout.date).toLocaleString()}
+				<strong>Duration:</strong> {workout.duration}
+	  
+				<ul>
+				  {workout.WorkoutLogExercise.map(wle => (
+					<li key={wle.id}>
+					  <strong>Exercise:</strong> {wle.Exercise.name}
+	  
+					  <ul>
+						{wle.SetLog.map(set => (
+						  <li key={set.id}>
+							<strong>Weight:</strong> {set.weight} 
+							<strong>, Reps:</strong> {set.reps}
+						  </li>
+						))}
+					  </ul>
+					</li>
+				  ))}
+				</ul>
+				<DeleteButton id={workout.id} />
+			  </li>
+			))}
+		  </ul>
 		</>
-	);
+	  );
+	  
 }

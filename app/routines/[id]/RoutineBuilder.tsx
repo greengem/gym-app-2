@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast';
 import { Exercise } from '@/types';
@@ -10,13 +10,33 @@ import { SearchResults } from './SearchResults';
 import ExerciseTable from './ExerciseTable';
 import { SaveButton } from './SaveButton';
 
-const RoutineBuilder: FC = () => {
+const RoutineBuilder: FC<{ routineId: string }> = ({ routineId }) => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [routineName, setRoutineName] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+
+  useEffect(() => {
+    if (routineId !== 'new') {
+      const fetchRoutine = async () => {
+        const response = await fetch(`/api/routines/${routineId}`);
+        const data = await response.json();
+  
+        if (data && data.name && Array.isArray(data.WorkoutPlanExercise)) {
+          setRoutineName(data.name);
+          setSelectedExercises(data.exercises || []);
+          setNotes(data.notes);
+        } else {
+          toast.error('Error fetching routine details.');
+        }
+      };
+  
+      fetchRoutine();
+    }
+  }, [routineId]);
+  
 
   const executeSearch = async () => {
     if (!searchTerm.trim()) {
@@ -37,11 +57,11 @@ const RoutineBuilder: FC = () => {
     }]);
   };
 
-  const updateExercise = (index: number, field: keyof Exercise, value: string | number) => {
+  const updateExercise = (index: number, field: keyof Exercise, value: number) => {
     const updatedExercises = [...selectedExercises];
     updatedExercises[index] = { ...updatedExercises[index], [field]: value };
     setSelectedExercises(updatedExercises);
-  };
+};
 
   const moveUp = (index: number) => {
     if (index === 0) return;
@@ -49,6 +69,7 @@ const RoutineBuilder: FC = () => {
     const temp = updatedExercises[index - 1];
     updatedExercises[index - 1] = updatedExercises[index];
     updatedExercises[index] = temp;
+    toast.success('Exercise moved up');
     setSelectedExercises(updatedExercises);
   };
 
@@ -58,6 +79,14 @@ const RoutineBuilder: FC = () => {
     const temp = updatedExercises[index + 1];
     updatedExercises[index + 1] = updatedExercises[index];
     updatedExercises[index] = temp;
+    toast.success('Exercise moved down');
+    setSelectedExercises(updatedExercises);
+  };
+
+  const deleteExercise = (index: number) => {
+    const updatedExercises = [...selectedExercises];
+    updatedExercises.splice(index, 1);
+    toast.success('Exercise removed');
     setSelectedExercises(updatedExercises);
   };
 
@@ -102,6 +131,7 @@ const RoutineBuilder: FC = () => {
     if (data.success) {
       toast.success('Routine saved successfully!');
       router.push('/routines');
+      router.refresh();
     } else {
       console.error("Server responded with error:", data.error);
       toast.error('Error saving routine.');
@@ -132,6 +162,7 @@ const RoutineBuilder: FC = () => {
         updateExercise={updateExercise}
         moveUp={moveUp}
         moveDown={moveDown}
+        deleteExercise={deleteExercise}
       />
       <SaveButton handleSave={handleSave} />
     </div>

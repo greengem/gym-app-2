@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import PageHeading from '@/components/PageHeading/PageHeading'
 import RoutineBuilder from './RoutineBuilder'
 
-export default async function NewRoutinePage() {
+export default async function NewRoutinePage({ params }: { params: { id: string } }) {
   const authRequest = auth.handleRequest("GET", context);
   const session = await authRequest.validate();
   if (!session) redirect("/login");
@@ -13,7 +13,7 @@ export default async function NewRoutinePage() {
   return (
     <>
       <PageHeading pageTitle="Create New Routine" />
-      <RoutineBuilder />
+      <RoutineBuilder routineId={params.id} />
     </>
   )
 }

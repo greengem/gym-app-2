@@ -43,7 +43,7 @@ export default async function RoutinesPage() {
               {exerciseDetail.duration && <li>{exerciseDetail.duration} Duration</li>}
             </ul>
           ))}
-          <Link href={`/workout/${routine.id}`}>Start Workout</Link>
+          <Link className="text-blue-500" href={`/workout/${routine.id}`}>Start Workout</Link>
         </div>
         ))}
     </>

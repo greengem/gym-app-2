@@ -1,14 +1,14 @@
+import { auth } from "@/auth/lucia";
+import * as context from "next/headers";
 import prisma from '@/db/prisma';
 
 export async function POST(request) {
-  
+  const authRequest = auth.handleRequest("GET", context);
+	const session = await authRequest.validate();
   const data = JSON.parse(await request.text());
-  const { name, date, workoutPlanId, exercises } = data;
-
-  console.log('Received request data:', data);
+  const { name, date, workoutPlanId, exercises, duration } = data;
   
-  // Hardcoded userId as specified
-  const userId = "mv8avz0o1jn8d3r";
+  const userId = session.user.userId;
   
   try {
     const newWorkoutLog = await prisma.workoutLog.create({
@@ -16,7 +16,8 @@ export async function POST(request) {
         name,
         date,
         workoutPlanId,
-        userId
+        userId,
+        duration
       },
     });
   
