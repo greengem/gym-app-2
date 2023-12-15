@@ -23,7 +23,6 @@ model Session {
   user_id        String
   username       String
   User           User     @relation(fields: [user_id], references:    [id], onDelete: Cascade)
-  timers         Timer[]
 }
 
 
@@ -62,16 +61,6 @@ model SetLog {
   reps                 Int
   order                Int?
   WorkoutLogExercise   WorkoutLogExercise @relation(fields: [workoutLogExerciseId], references: [id], onDelete: Cascade)
-}
-
-model Timer {
-  id             String      @id
-  sessionId      String      @unique
-  startTime      DateTime    @default(now())
-  pauseTime      DateTime?
-  pausedDuration Int         @default(0)
-  status         TimerStatus
-  Session        Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutLog {
@@ -182,10 +171,4 @@ enum Muscle {
   forearms
   neck
   abductors
-}
-
-enum TimerStatus {
-  RUNNING
-  PAUSED
-  STOPPED
 }
